@@ -21,7 +21,8 @@ async fn main() -> anyhow::Result<()> {
 
     tracing::info!("Loaded config: topic={}, port={}", cfg.topic, cfg.server_port);
 
-    let kafka_client = DaprKafkaClient::new(&cfg.pubsub_component, &cfg.topic).await?;
+    let dapr_addr_grpc_port = format!("https://{}:{}", cfg.dapr_addr,cfg.dapr_grpc_port);
+    let kafka_client = DaprKafkaClient::new(&cfg.pubsub_component, &cfg.topic, &dapr_addr_grpc_port).await?;
 
     let app = Router::new()
         .route("/send", post(send_message_handler))

@@ -21,6 +21,3 @@ Cargo.lock
 .idea/
 .DS_Store
 logs/
-
-# Windows
-Thumbs.db

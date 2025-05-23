@@ -9,15 +9,16 @@ pub struct DaprKafkaClient {
     dapr: Client<TonicClient>,
 }
 
-const DAPR_ADDR: &str = "https://127.0.0.1";
+//const DAPR_ADDR: &str = "https://127.0.0.1";
 
 impl DaprKafkaClient {
-    pub async fn new(pubsub_component: &str, topic: &str) -> Result<Self, anyhow::Error> {
+    pub async fn new(pubsub_component: &str, topic: &str, dapr_grpc_addr: &str) -> Result<Self, anyhow::Error> {
 
         // Trying to connect to Dapr runtime
-        let dapr = Client::<TonicClient>::connect(DAPR_ADDR.to_string())
+        //let dapr = Client::<TonicClient>::connect(DAPR_ADDR.to_string())
+        let dapr = Client::<TonicClient>::connect(dapr_grpc_addr.to_string())
             .await
-            .map_err(|e| anyhow::anyhow!("❌ Error connecting to Dapr  {}", e))?;
+            .map_err(|e| anyhow::anyhow!("Error connecting to Dapr  {}", e))?;
 
         Ok(Self {
             pubsub_component: pubsub_component.to_string(),
@@ -25,8 +26,6 @@ impl DaprKafkaClient {
             dapr,
         })
     }
-
-
 
     pub async fn publish<T: Serialize + Sync>(&mut self, payload: T) -> Result<(), anyhow::Error>
     {
@@ -38,7 +37,7 @@ impl DaprKafkaClient {
             .publish_event(
                 &self.pubsub_component,
                 &self.topic,
-                &content_type, // ✅ <- ahora sí es &String
+                &content_type, 
                 json,
                 metadata,
             )
